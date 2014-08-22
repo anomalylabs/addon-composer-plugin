@@ -35,3 +35,27 @@ the scripts in the composer.json as shown below.
 
 The main application can require the `streams.addon.autoload.php` file and register namespaces with the Composer Classloader.
 This is an example of what it could look like.
+
+    $loader = new Composer\Autoload\ClassLoader;
+
+    // Loop through each addon and register the PSR paths
+
+    if (is_file($addon['path'] . '/streams.addon.autoload.php')) {
+        $autoload = require $addon['path'] . '/streams.addon.autoload.php';
+
+        if (isset($autoload['psr-0'])) {
+            foreach ($autoload['psr-0'] as $namespace => $src) {
+                $loader->add($namespace, $vendorFolder.$src));
+            }
+        }
+
+        if (isset($autoload['psr-4'])) {
+            foreach ($autoload['psr-4'] as $namespace => $src) {
+                $loader->addPsr4($namespace, $vendorFolder.$src));
+            }
+        }
+    }
+
+    // Register
+
+    $loader->register();
